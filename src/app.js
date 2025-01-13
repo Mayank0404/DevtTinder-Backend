@@ -8,23 +8,16 @@ const app=express();
 // handles the request on the server
 //testing
 
-// advance routing
+// Usig regex
 
-app.get("/user/ab?c",(req,res)=>{
-    res.send("B is optional")
-})
- 
-app.post("/user/ab+c",(req,res)=>{
-    res.send("Any number of b")
+app.get(/a/,(req,res)=>{
+    res.send("regex 1 of anywhere a")
 })
 
-app.post("/ab*cd",(req,res)=>{
-    res.send("ANything between ab and cd")
+app.post(/.*fly$/,(req,res)=>{
+    res.send("regex start with anything and end with fly")
 })
 
-app.get("/a(bc)+d",(req,res)=>{
-    res.send("Grouping is done of bc anynumber of bc")
-})
 
 // listens to request on the server
 app.listen(7777,()=>{
