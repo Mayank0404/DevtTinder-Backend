@@ -7,30 +7,31 @@ const app=express();
 
 // handles the request on the server
 //testing
-app.use("/hello",(req,res)=>{
-    res.send("Hello Hello HEllo");
-});
 
-app.use("/test",(req,res)=>{
-    res.send("hello from the server test");
-});
+// advance routing
 
-app.get("/user",(req,res)=>{
-    res.send({firstName:"MAyank",LastNAme:"Sharma"})
+app.get("/user/ab?c",(req,res)=>{
+    res.send("B is optional")
+})
+ 
+app.post("/user/ab+c",(req,res)=>{
+    res.send("Any number of b")
 })
 
-app.post("/user",(req,res)=>{
-    res.send({firstName:"SOumya",LastNAme:"Sharma"})
+app.post("/ab*cd",(req,res)=>{
+    res.send("ANything between ab and cd")
 })
 
-app.delete("/user",(req,res)=>{
-    res.send("DEleted Successfully  ")
+app.get("/a(bc)+d",(req,res)=>{
+    res.send("Grouping is done of bc anynumber of bc")
 })
+
 // listens to request on the server
 app.listen(7777,()=>{
     // only be printed if server will be successfully running
     console.log("server is running on Port 7777");
 });
+
 
 
 
