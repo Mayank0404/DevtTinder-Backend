@@ -5,18 +5,75 @@ const express=require("express");
 // creates a new web server
 const app=express();
 
-// handles the request on the server
-//testing
+// multiple route handlers
 
-// Usig regex
+// app.use("/user",(req,res,next)=>{
+//     console.log("route handler 1");
+//     next();
+//     // res.send("Route 1");
+// },(req,res)=>{
+//     res.send("Response 2");
+// }) 
+// op will be response 2
 
-app.get(/a/,(req,res)=>{
-    res.send("regex 1 of anywhere a")
-})
+// app.use("/user",
+//     (req,res,next)=>{
+//     console.log("USER ROUTE HANDLER 1")
+//     next();
+//     res.send("Route 1")
 
-app.post(/.*fly$/,(req,res)=>{
-    res.send("regex start with anything and end with fly")
-})
+// },(req,res)=>{
+//     console.log("USER ROUTE HANDLER 2");
+//     res.send("RESPONSE 2")
+    
+// })
+//output will be response 2 as next will send to next route handler and the error will be in res.send route1 due to route 2 res.send will already have sent
+
+// app.use("/user",(req,res,next)=>{
+//     console.log("route handle 1");
+//     next();
+// },(req,res,next)=>{
+//     console.log("route handle 2");
+//     next();
+// },(req,res,next)=>{
+//     console.log("route handle 1");
+//     next();
+// },(req,res,next)=>{
+//     console.log("route handle 1");
+//     res.send("DOne")
+// })
+// output wille bw done witha all console
+
+// app.use("/user",(req,res,next)=>{
+//     console.log("route handle 1");
+//     next();
+// },(req,res,next)=>{
+//     console.log("route handle 2");
+//     next();
+// },(req,res,next)=>{
+//     console.log("route handle 1");
+//     next();
+// },(req,res,next)=>{
+//     console.log("route handle 1");
+//     next();
+// })
+// all will log but error in as no res has been sent and it will expect more of the route handle due tolast next
+
+// app.use("/user",[(req,res,next)=>{
+//     console.log("route handle 1");
+//     next();
+// },(req,res,next)=>{
+//     console.log("route handle 2");
+//     next();
+// },(req,res,next)=>{
+//     console.log("route handle 1");
+//     next();
+// },(req,res,next)=>{
+//     console.log("route handle 1");
+//     res.send("DOne")
+// }])
+// can even send array of functions or route handlers
+
 
 
 // listens to request on the server
