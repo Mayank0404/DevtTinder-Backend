@@ -6,32 +6,16 @@ const express=require("express");
 // creates a new web server
 const app=express();
 
-const {adminAuth,userAuth}=require("./middlewares/authmiddleware");
+// one way of handling errors
+app.get("/userData",(req,res)=>{
+  
+    throw new Error("asdffdsf");
+    res.send("User data sent")
+});
 
-// creatinng a middleware for admin dummy
-
-app.use("/admin",adminAuth);
-// single user route so writing it in the api only
-app.post("/user/login",(req,res)=>{
-    res.send("User logged in");
+app.use("/",(err,req,res,next)=>{
+    res.status(500).send("Something went wrong")
 })
-
-app.get("/user/userData",userAuth,(req,res)=>{
-    res.send("USer Data ")
-})
-
-app.get("/admin/getAllData",(req,res)=>{
-    res.send("All data Sent")
-})
-
-app.get("/admin/deleteUser",(req,res)=>{
-    res.send("USER Deleted By Admin")
-})
-
-
-   
-
-
 // listens to request on the server
 app.listen(7777,()=>{
     // only be printed if server will be successfully running
