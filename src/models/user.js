@@ -1,13 +1,17 @@
 const mongoose=require("mongoose")
-
+const validator=require("validator")
 const userSchema=new mongoose.Schema({
     firstName:{
         type:String,
         required:true,
         maxLength:50,
+        trim:true,
     },
     lastName:{
-        type:String
+        type:String,
+        minLength:2,
+        maxLength:50,
+        trim:true,
     },
     emailId:{
         type:String,
@@ -15,14 +19,27 @@ const userSchema=new mongoose.Schema({
         required:true,
         trim:true,
         lowercase:true, 
+        validate(v){
+            if(!validator.isEmail(v)){
+                throw new Error("Invalid Email"+value);
+            }
+        }
     },
     password:{
         type:String,
-        required:true
+        required:true,
+        trim:true,
+        validate(value){
+            if(!validator.isStrongPassword(value)){
+                throw new Error("Enter a Strong Password");
+                
+            }
+        }
     },
     age:{
         type:Number ,
-        min:18
+        min:18,
+        max:70,
     },
     gender:{
         type:String,
@@ -35,14 +52,25 @@ const userSchema=new mongoose.Schema({
     photoUrl:{
         type:String,
         default:"https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg",
-          
+        validate(value){
+            if(!validator.isURL(value)){
+                throw new Error("Invalid  url");  
+            }
+        }
+        
     },
     about:{
         type:String,
-        default:"This is default information about user"
+        default:"This is default information about user",
+        maxLength:100,
     },
     skills:{
-        type:[String]
+        type:[String],
+        validate(v){
+            if(v.length>10){
+                throw new Error("SKILLS CAN HAVE ATMOST 10")
+            }
+        }
     }
 },{
     timestamps:true

@@ -5,8 +5,15 @@ const app=express();
 const User=require("./models/user")
 app.use(express.json());
 app.post("/signup",async(req,res)=>{
+    
     const user = new User(req.body);
     try {    
+        const allowed_feilds=["firstName","lastName","emailId","password",""]
+        const is_allowed= Object.keys(req.body).every((k)=>allowed_feilds.includes(k))
+        if(!is_allowed){
+            throw new Error("Enter the required Feild");
+            
+        }
         await user.save();
         res.send("USer sAved")     
     } catch (error) {
@@ -57,10 +64,15 @@ app.delete("/user",async(req,res)=>{
 
 })
 //update user by id
-app.patch("/user",async(req,res)=>{
-    const userId=req.body.userId
+app.patch("/user/:userId",async(req,res)=>{ 
+    const userId=req.params.userId
     const data=req.body;
     try {
+        const allowed_updates=["photoUrl","skills","gender","about","age"]
+        const isUpdateAllowed=Object.keys(data).every((k)=> allowed_updates.includes(k))
+        if(!isUpdateAllowed){
+            throw new Error("Update not allowed")
+        }
         await User.findByIdAndUpdate({_id:userId},data,{
             returnDocument:"after",
             runValidators:true
@@ -69,7 +81,7 @@ app.patch("/user",async(req,res)=>{
         });
         res.send("USER UPDATED SUCCESSFULLY")
     } catch (err) {
-        res.status(400).send("Something Went Wrong"+err.message);   
+        res.status(400).send("Update not allowed"+err.message);   
     }
 })
 // update user by email id
