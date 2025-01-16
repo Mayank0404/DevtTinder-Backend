@@ -4,25 +4,18 @@ const connectDb=require("./config/database")
 const app=express();
 const User=require("./models/user")
 app.use(express.json());
-//signup api
 app.post("/signup",async(req,res)=>{
-    const user=new User(req.body)
-    const email=req.body.emailId;
-
-    try {
-        const duplicateUser=await User.find({emailId:email})
-        if(duplicateUser.length!=0){
-            res.send("User already exist")
-        }  
-        else{
+    const user = new User(req.body);
+    try {    
         await user.save();
-        res.send("USer sAved")
-        }
-        
+        res.send("USer sAved")     
     } catch (error) {
-        res.status(400).send("Error saving the User",error.message);
+        // res.status(400).send("Error saving the User"+error.message);
+        if (error.code === 11000) {
+            return res.status(400).send("Email already exists");
+        }
+        res.status(400).send("Error saving the user: " + error.message);
     }
-
 })
 
 // find user by email
@@ -63,24 +56,40 @@ app.delete("/user",async(req,res)=>{
 
 
 })
-
+//update user by id
 app.patch("/user",async(req,res)=>{
     const userId=req.body.userId
     const data=req.body;
     try {
         await User.findByIdAndUpdate({_id:userId},data,{
-            returnDocument:"after"
+            returnDocument:"after",
+            runValidators:true
+
             // returns the documnet after updating and by defualt its before
         });
         res.send("USER UPDATED SUCCESSFULLY")
-    } catch (error) {
-        res.status(400).send("Something Went Wrong")
+    } catch (err) {
+        res.status(400).send("Something Went Wrong"+err.message);   
     }
 })
+// update user by email id
+app.patch("/userUpdate",async(req,res)=>{
+    console.log("APi Hitted");
+    
+        const data=req.body;
+        const email=req.body.emailId;
 
+    try {
+        await User.findOneAndUpdate({emailId:email},data);
+        res.send("USER UPDATED BY EMAILID")
+    } catch (err) {
+        res.status(400).send("SOMETHING WENT WRONG")
+    }
+})
 //calling the function of database connection
 connectDb()
-.then(()=>{ 
+.then(async ()=>{ 
+    await User.createIndexes();
     console.log("Database Connected");
     app.listen(7777,()=>{
         console.log("Server is running on PORT 7777");
@@ -92,7 +101,7 @@ connectDb()
     console.log("Database is not connected",err);
     
 })
-
+ 
 
 
 
