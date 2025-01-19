@@ -1,29 +1,92 @@
-
-const express=require("express");
+ const express=require("express");
+ const cookieparser=require("cookie-parser")
 const connectDb=require("./config/database")
+const jwt=require("jsonwebtoken")
 const app=express();
+const bcrypt=require("bcrypt")
 const User=require("./models/user")
+const {validateSignUpData,validateLoginData}=require("./utils/validation")
 app.use(express.json());
+app.use(cookieparser());
+
+
+// signup api
 app.post("/signup",async(req,res)=>{
     
-    const user = new User(req.body);
-    try {    
-        const allowed_feilds=["firstName","lastName","emailId","password",""]
-        const is_allowed= Object.keys(req.body).every((k)=>allowed_feilds.includes(k))
-        if(!is_allowed){
-            throw new Error("Enter the required Feild");
-            
-        }
+    try {  
+        validateSignUpData(req);
+        const {emailId,firstName,lastName,password}=req.body;
+        const hashedPassword=await bcrypt.hash(password,10);        
+        const user = new User({
+            emailId,
+            firstName,
+            lastName,
+            password:hashedPassword
+        });
         await user.save();
         res.send("USer sAved")     
     } catch (error) {
         // res.status(400).send("Error saving the User"+error.message);
-        if (error.code === 11000) {
-            return res.status(400).send("Email already exists");
-        }
-        res.status(400).send("Error saving the user: " + error.message);
+        res.status(400).send("Error " + error.message);
     }
 })
+
+
+// login api
+app.post("/login",async(req,res)=>{
+    try{
+        validateLoginData(req);
+        const {emailId,password}=req.body;
+        const user=await User.findOne({emailId});
+        if(!user){
+            throw new Error("Invalid credentials"); 
+        }
+        const isPasswordValid=await bcrypt.compare(password,user.password);
+        if( isPasswordValid){
+            // create a jwt token and 
+            const token=await jwt.sign({_id:user._id},"HELLOSHIVAM@")
+            res.cookie("token",token);
+            // add the token to the cookie and send the response back to the user   
+            res.send("User logged in successfull");
+        }
+        else{ 
+            throw new Error("Invalid credentials");
+            
+        }
+
+
+
+
+    }
+    catch(err){
+        res.status(400).send("ERROR"+err.message)
+    }
+})
+
+
+// users profile
+app.get("/profile/",async(req,res)=>{
+    const cookies=req.cookies;
+    const {token}=cookies;
+    try{
+        if(!token){
+            throw new Error("Invalid token")
+        }
+    const decodedMessage=jwt.verify(token,)
+    const {_id}=decodedMessage;    
+    const user=await User.findById(_id)
+    if(!user){
+        throw new Error("Please login again");
+        
+    }
+    res.send(user);
+    }
+    catch(err){
+        res.status(400).send(err.message);
+    }
+    
+})
+
 
 // find user by email
 app.get("/user",async(req,res)=>{
@@ -41,6 +104,8 @@ app.get("/user",async(req,res)=>{
         res.status(404).send("Something went wrong",err.message);
     }
 })
+
+
 //feed api
 app.get("/feed",async(req,res)=>{
     try {
@@ -50,6 +115,8 @@ app.get("/feed",async(req,res)=>{
         res.status(404).send("SOmething went wrong");
     }
 })
+
+
 //delete a user
 app.delete("/user",async(req,res)=>{
     const id=req.body.userId;
@@ -63,6 +130,8 @@ app.delete("/user",async(req,res)=>{
 
 
 })
+
+
 //update user by id
 app.patch("/user/:userId",async(req,res)=>{ 
     const userId=req.params.userId
@@ -84,6 +153,8 @@ app.patch("/user/:userId",async(req,res)=>{
         res.status(400).send("Update not allowed"+err.message);   
     }
 })
+
+
 // update user by email id
 app.patch("/userUpdate",async(req,res)=>{
     console.log("APi Hitted");
@@ -98,6 +169,8 @@ app.patch("/userUpdate",async(req,res)=>{
         res.status(400).send("SOMETHING WENT WRONG")
     }
 })
+
+
 //calling the function of database connection
 connectDb()
 .then(async ()=>{ 
