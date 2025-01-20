@@ -21,6 +21,23 @@ const validateLoginData=(req)=>{
     }
 }
 
+const validateProfileData=(req)=>{
+    const allowedFields=["firstName","lastName","photoUrl","emailId","about","gender","skills","age"];
+    const isUpdateAllowed=Object.keys(req.body).every((field)=>allowedFields.includes(field));
+    return isUpdateAllowed;
+}
+
+const validatePassword=(req)=>{
+    const{currentPassword,newPassword}=req.body;
+    if(!currentPassword || !newPassword){
+        throw new Error("Enter Both Passwords");    
+    }
+    if(!validator.isStrongPassword(newPassword)){
+        throw new Error("New Password is Not strong enough"); 
+    }
+    return true;
+}
+
 module.exports={
-    validateSignUpData,validateLoginData
+    validateSignUpData,validateLoginData,validateProfileData,validatePassword
 }
