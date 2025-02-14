@@ -22,7 +22,7 @@ const validateLoginData=(req)=>{
 }
 
 const validateProfileData=(req)=>{
-    const allowedFields=["firstName","lastName","photoUrl","emailId","about","gender","skills","age"];
+    const allowedFields=["firstName","lastName","photoUrl","about","gender","skills","age"];
     const isUpdateAllowed=Object.keys(req.body).every((field)=>allowedFields.includes(field));
     return isUpdateAllowed;
 }

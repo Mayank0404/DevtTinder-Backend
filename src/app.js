@@ -1,4 +1,6 @@
+ require("dotenv").config();
  const express=require("express");
+
  const cookieparser=require("cookie-parser")
 const connectDb=require("./config/database")
 const cors=require("cors")
@@ -32,7 +34,7 @@ connectDb()
     await User.createIndexes();
     console.log("Database Connected");
     app.listen(7777,()=>{
-        console.log("Server is running on PORT 7777");
+        console.log(`Server is running on PORT ${process.env.PORT}`);
         
     })
     

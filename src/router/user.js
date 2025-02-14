@@ -3,7 +3,7 @@ const User=require("../models/user");
 const userRouter=express.Router();
 const {userAuth}=require("../middlewares/auth")
 const ConnectionRequest=require("../models/connectionRequest")
-const USER_PUBLIC_DATA="firstName lastName age skills photoUrl"
+const USER_PUBLIC_DATA="firstName lastName age skills photoUrl about gender"
 // review pending requests or requests received
 userRouter.get("/user/requests/received",userAuth,async(req,res)=>{
 try{
@@ -21,7 +21,7 @@ try{
         data:connectionRequest,
     })
 }
-  catch(error){
+  catch(error){ 
     res.status(400).send("ERROR "+err.messsage);
   }
 })
@@ -32,8 +32,8 @@ userRouter.get("/user/connections",userAuth, async(req,res)=>{
         const loggedInUser=req.user;
         const connectionRequest=await ConnectionRequest.find({
         
-          $or:[{fromUserId:loggedInUser._id,status:"accepted"},
-            {toUserId:loggedInUser._id,status:"accepted"},
+          $or:[{fromUserId:loggedInUser._id,status:"accepted"}, 
+            {toUserId:loggedInUser._id,status:"accepted"},  
           ]
         }).populate("fromUserId",USER_PUBLIC_DATA)
         .populate("toUserId",USER_PUBLIC_DATA)
