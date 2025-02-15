@@ -4,6 +4,7 @@ const ConnectionRequest=require("../models/connectionRequest");
 const User=require("../models/user");
 const { findById } = require("../models/user");
 const requestRouter=express.Router();
+const sendEmail=require("../utils/sendEmail")
 //api to send connection request
 requestRouter.post("/request/send/:status/:toUserId",userAuth,async(req,res)=>{
 
@@ -36,7 +37,10 @@ requestRouter.post("/request/send/:status/:toUserId",userAuth,async(req,res)=>{
             fromUserId,
             status, 
         });
-        const data=await connectionRequest.save();          
+        const data=await connectionRequest.save();    
+        const emailres=await sendEmail.run();      
+        console.log(emailres);
+        
         res.json({
             message:req.user.firstName+" is "+status+" in "+isUserPresent.firstName,
             data,
