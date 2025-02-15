@@ -38,8 +38,8 @@ requestRouter.post("/request/send/:status/:toUserId",userAuth,async(req,res)=>{
             status, 
         });
         const data=await connectionRequest.save();    
-        const emailres=await sendEmail.run();      
-        console.log(emailres);
+        // const emailres=await sendEmail.run();      
+        // console.log(emailres);
         
         res.json({
             message:req.user.firstName+" is "+status+" in "+isUserPresent.firstName,
