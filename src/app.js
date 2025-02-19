@@ -1,9 +1,11 @@
- require("dotenv").config();
  const express=require("express");
  const cookieparser=require("cookie-parser")
 const connectDb=require("./config/database")
 const cors=require("cors")
 const app=express();
+ require("dotenv").config();
+
+ require("./utils/cronjobs");
 
 const User=require("./models/user")
 
@@ -20,12 +22,13 @@ const authRouter=require("./router/auth")
 const profileRouter=require("./router/profile")
 const requestRouter=require("./router/request")
 const userRouter=require("./router/user")
+const paymentRouter=require("./router/payment");
 
 app.use("/",authRouter);
 app.use("/",profileRouter);
 app.use("/",requestRouter);
 app.use("/",userRouter);
-
+app.use("/",paymentRouter);
 
 //calling the function of database connection
 connectDb()
