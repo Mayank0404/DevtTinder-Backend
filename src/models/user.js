@@ -75,6 +75,17 @@
                     throw new Error("SKILLS CAN HAVE ATMOST 10")
                 }
             }
+        },
+        isPremium:{
+            type:Boolean,
+            default:false,
+            
+        },
+        membershipType:{
+            type:String
+        },
+        membershipValidity:{
+            type:Date
         }
     },{
         timestamps:true
